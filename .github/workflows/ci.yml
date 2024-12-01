@@ -39,3 +39,41 @@ jobs:
         run: |
           echo "Le Treshold est de ${{vars.TRESHOLD_QUALITY }}"
           poetry run pylint request.py --fail-under ${{vars.TRESHOLD_QUALITY }}
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1 : Vérifier le code source
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Étape 2 : Configurer Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'  # Spécifiez la version de Python utilisée par Azure
+
+          # Étape 3 : Installer Poetry
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      # Étape 4 : Installer les dépendances
+      - name: Install dependencies with Poetry
+        run: |
+          poetry install --no-root
+
+      # Étape 4 : Archiver l'application
+      - name: Archive the app
+        run: |
+          zip -r app.zip .  # Archivez tout le projet dans un fichier ZIP
+
+      # Étape 5 : Déployer sur Azure Web App
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "testapimlops"  # Remplacez par le nom de votre Web App Azure
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # Utilisez le secret configuré dans GitHub
+          package: app.zip
