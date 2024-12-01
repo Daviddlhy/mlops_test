@@ -37,4 +37,4 @@ jobs:
       # Étape 5 : Lancer les tests ou autres commandes
       - name: Run tests
         run: |
-          poetry run pylint iris_test.py --fail-under 5
+          poetry run pylint request.py --fail-under 5
