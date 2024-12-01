@@ -37,4 +37,5 @@ jobs:
       # Étape 5 : Lancer les tests ou autres commandes
       - name: Run tests
         run: |
-          poetry run pylint request.py --fail-under 5
+          echo "Le Treshold est de ${{vars.TRESHOLD_QUALITY }} |
+          poetry run pylint request.py --fail-under ${{vars.TRESHOLD_QUALITY }}
