@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - *
+  pull_request:
+    branches:
+      - *
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1 : Cloner le dépôt
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Étape 2 : Installer Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'  # Remplacez par la version Python de votre choix
+
+      # Étape 3 : Installer Poetry
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      # Étape 4 : Installer les dépendances
+      - name: Install dependencies with Poetry
+        run: |
+          poetry install --no-root
+
+      # Étape 5 : Lancer les tests ou autres commandes
+      - name: Run tests
+        run: |
+          poetry run pylint iris_test.py --fail-under 5
